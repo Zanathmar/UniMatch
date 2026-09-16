@@ -35,7 +35,7 @@ export default function Compare() {
   useEffect(() => {
     if (slugs.length < 2) return;
     api.post("/compare", { slugs }).then((r) => setItems(r.data.items));
-  }, []);
+  }, [slugs]);
 
   if (slugs.length < 2) {
     return (
