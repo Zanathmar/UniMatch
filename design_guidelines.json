@@ -1,0 +1,110 @@
+{
+  "project_identity": {
+    "name": "UniMatch — University & Scholarship Decision Engine",
+    "theme_type": "Clean minimal light theme",
+    "aesthetic_style": "Linear / Notion / Fintech Dashboard minimal hybrid",
+    "gradient_policy": "STRICTLY NO GRADIENTS. Solid tone surfaces, 1px precision borders, high visual contrast",
+    "target_user": "Student seeking fit-oriented global university recommendations and scholarships"
+  },
+  "typography": {
+    "font_family_headings": "Outfit, Plus Jakarta Sans, sans-serif",
+    "font_family_body": "Inter, system-ui, sans-serif",
+    "font_family_mono": "JetBrains Mono, IBM Plex Mono, monospace",
+    "heading_rules": {
+      "h1": "text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-zinc-900 leading-tight",
+      "h2": "text-2xl sm:text-3xl font-semibold tracking-tight text-zinc-900",
+      "h3": "text-lg sm:text-xl font-medium tracking-tight text-zinc-800",
+      "overlines": "text-xs font-mono uppercase tracking-widest text-zinc-500 font-medium"
+    },
+    "body_rules": "text-sm sm:text-base text-zinc-600 leading-relaxed",
+    "mono_rules": "font-mono text-xs font-semibold tracking-wide"
+  },
+  "color_palette": {
+    "background_canvas": "#FAFAFA",
+    "surface_card": "#FFFFFF",
+    "surface_subtle": "#F4F4F5",
+    "border_default": "#E4E4E7",
+    "border_strong": "#D4D4D8",
+    "text_primary": "#09090B",
+    "text_secondary": "#52525B",
+    "text_muted": "#71717A",
+    "brand_primary": "#4F46E5",
+    "brand_primary_hover": "#4338CA",
+    "brand_accent": "#0F172A",
+    "status_verified": {
+      "bg": "#ECFDF5",
+      "text": "#047857",
+      "border": "#A7F3D0",
+      "badge": "bg-emerald-50 text-emerald-700 border-emerald-200 font-mono text-xs font-medium"
+    },
+    "status_estimated": {
+      "bg": "#FFFBEB",
+      "text": "#B45309",
+      "border": "#FDE68A",
+      "badge": "bg-amber-50 text-amber-700 border-amber-200 font-mono text-xs font-medium"
+    },
+    "fit_scores": {
+      "high_match": "bg-emerald-500 text-white font-mono",
+      "mid_match": "bg-indigo-600 text-white font-mono",
+      "moderate": "bg-zinc-700 text-white font-mono"
+    }
+  },
+  "layout_and_spacing": {
+    "padding_philosophy": "Generous Notion-style padding. 1px solid borders for visual hierarchy instead of drop shadows.",
+    "container_max_width": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "grid_modes": {
+      "dashboard_mode": "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6",
+      "bento_marketing": "grid grid-cols-1 md:grid-cols-12 gap-6"
+    },
+    "header_nav": "sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-zinc-200 px-4 py-3 flex items-center justify-between shadow-none",
+    "sidebar_nav": "w-64 border-r border-zinc-200 bg-zinc-50/50 p-4 min-h-screen"
+  },
+  "component_strategies": {
+    "profile_wizard": "Multi-step progress header with steps (1. Academic, 2. Budget & Aid, 3. Target Programs & Location, 4. Standardized Tests & Requirements). Uses Shadcn Form, Input, Select, Slider, Switch.",
+    "fit_score_badge": "Pill-shaped badge with numerical fit score (e.g. 94%), confidence bar indicator, and Verified/Estimated status badge.",
+    "university_recommendation_card": "Clean Notion/Linear card with 1px border. Shows University logo/badge, location, QS ranking, fit score ring/bar, key tuition/deadline stats with source tooltips, and 'Why This Match?' toggle.",
+    "why_this_match_drawer": "Collapsible panel showing weighted breakdown across 7 dimensions: Academic (25%), Budget (20%), Scholarship (20%), Requirements (15%), Program (10%), Location (5%), Ranking (5%). Includes explainable text bullet points.",
+    "side_by_side_compare": "Sticky top comparison matrix for 2 to 5 universities with spec diff highlighting, missing field confidence indicators, and mobile tabbed switch.",
+    "timeline_widget": "Vertical deadline timeline with interactive filter (Application, Financial Aid, Scholarship, Visa) and color-coded urgency indicators.",
+    "saved_shortlist": "Kanban or tabular list with private note fields, decision status flags (Considering, Applying, Submitted), and action buttons."
+  },
+  "image_assets": {
+    "university_campuses": [
+      {
+        "url": "https://images.unsplash.com/photo-1575688588571-966e9b61f0b7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHwxfHx1bml2ZXJzaXR5JTIwY2FtcHVzJTIwbW9kZXJuJTIwYXJjaGl0ZWN0dXJlJTIwc3R1ZGVudHxlbnwwfHx8fDE3ODkzNDg5NjF8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Modern university campus building circular architecture",
+        "category": "hero_and_university_card"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1633987027569-a6599b632de7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHwyfHx1bml2ZXJzaXR5JTIwY2FtcHVzJTIwbW9kZXJuJTIwYXJjaGl0ZWN0dXJlJTIwc3R1ZGVudHxlbnwwfHx8fDE3ODkzNDg5NjF8MA&ixlib=rb-4.1.0&q=85",
+        "description": "University campus courtyard with modern architecture",
+        "category": "university_detail"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1784308992921-045da5443625?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHwzfHx1bml2ZXJzaXR5JTIwY2FtcHVzJTIwbW9kZXJuJTIwYXJjaGl0ZWN0dXJlJTIwc3R1ZGVudHxlbnwwfHx8fDE3ODkzNDg5NjF8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Modern campus interior dining and study lounge area",
+        "category": "scholarship_header"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1763615834709-cd4b196980db?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHw0fHx1bml2ZXJzaXR5JTIwY2FtcHVzJTIwbW9kZXJuJTIwYXJjaGl0ZWN0dXJlJTIwc3R1ZGVudHxlbnwwfHx8fDE3ODkzNDg5NjF8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Green university campus grounds",
+        "category": "university_detail_hero"
+      }
+    ]
+  },
+  "instructions_to_main_agent": [
+    "Follow Linear/Notion dashboard aesthetics strictly: clear 1px borders (border-zinc-200), zero soft radial gradients, zero decorative dark backgrounds.",
+    "Ensure every data point displays a source label and a Verified (emerald pill) or Estimated (amber pill) status tag.",
+    "Implement the multi-step Profile Wizard with immediate live validation and step completion indicator.",
+    "Build 'Why This Match?' breakdown dialog/drawer detailing exact academic, financial, and requirement calculations with clear explanations.",
+    "Include data-testid on all interactive components (e.g., data-testid='university-card-compare-btn', data-testid='fit-score-breakdown-btn').",
+    "Ensure side-by-side comparison supports floating toolbar when selecting 2 to 5 universities.",
+    "Maintain responsive layouts with mobile tabbed fallback for complex tabular data.",
+    "Use Lucide icons throughout with crisp 1.5px stroke width."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": {
+    "data_testid_requirement": "All interactive and key informational elements MUST include a data-testid attribute formatted in kebab-case (e.g. data-testid='profile-completeness-ring').",
+    "no_gradients": "Do not apply CSS gradients or backdrop gradients anywhere in the application.",
+    "accessibility": "Ensure high contrast standards (APCA/WCAG AA compliant) across all badge states and text elements."
+  }
+}

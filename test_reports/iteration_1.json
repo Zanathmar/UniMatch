@@ -1,0 +1,34 @@
+{
+  "summary": "First iteration testing for UniMatch. Backend: 31/31 pytest cases pass — auth (register/login/me/logout/forgot+reset), meta, profile completeness (100% attainable), universities list/filter/sort/detail/404, recommendations deterministic + 7-category weighted breakdown with Verified/Estimated, missing-data ⇒ Estimated confidence, recommendation detail, compare 2..5 validation, scholarship estimator sorted by verdict, saved CRUD + duplicate 400, timeline sorted, dashboard shape. Frontend: full E2E happy path passed after workaround — register → dashboard → 'Complete profile' → 6-step wizard → dashboard shows completeness+top matches → Discover (32 cards, 'Why this match' shows all 7 category breakdowns with Verified/Estimated badges) → Compare (matrix renders for 2 slugs) → University detail (save) → Scholarships (verdict cards) → Shortlist (note edit + status update work) → Timeline (list rendered) → Logout redirects to /login. Two frontend bugs found (see below).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Register + PublicOnly route wrapper (App.js, Auth.jsx Register.submit)", "issue": "After successful signup, the app briefly navigates to /onboarding then immediately redirects to /dashboard, so the ProfileWizard never renders after registration. Root cause: register() calls setUser(data.user) which causes PublicOnly wrapping the /register route to render <Navigate to='/dashboard' replace/>. Its useEffect fires AFTER the imperative navigate('/onboarding') in Register.submit, overriding it. Repro: Sign up a new user; observe URL transitions register → onboarding → dashboard within ~200ms. Wizard is still reachable via the 'Complete profile' button on the Dashboard, so no data loss, but the intended new-user onboarding UX is broken.", "selector": "[data-testid=\"register-submit\"]", "priority": "HIGH"},
+      {"component": "ProfileWizard completeness on first pass", "issue": "After walking all 6 steps and filling every field, dashboard reports 92% complete with 'Personal info' still flagged as missing (should be 100%). Manually re-opening the wizard and re-saving personal step usually completes it. Likely a state-race in saveStep: first PUT payload from step 1 may be sent while React state for one of nationality/current_country hasn't flushed. Consider committing the local state on blur / awaiting a microtask before PUT, or moving personal step fields into refs.", "selector": "[data-testid=\"completeness-card\"]", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/backend/tests/backend_test.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Fix post-register redirect: navigate the user to /onboarding after signup without triggering PublicOnly's dashboard redirect. Options: (a) call navigate('/onboarding',{replace:true}) BEFORE setUser inside AuthContext.register, or (b) in PublicOnly return null while an intended-onboarding flag is set, or (c) don't render PublicOnly redirect on the same tick as setUser (use effect-based redirect in Register instead).",
+    "Fix wizard personal-step save race so that completing all steps reliably yields 100% completeness."
+  ],
+  "critical_code_review_comments": [
+    "auth.py cookies use SameSite=None + Secure — required for cross-site preview but only works via HTTPS; frontend correctly falls back to Bearer/localStorage so this is fine.",
+    "routes.py /api/universities/{slug} is defined AFTER /api/universities so ordering is safe; but generic slug matcher will catch reserved words if any future named routes are added — consider using a stricter regex path.",
+    "matching.py compute_fit is fully deterministic and side-effect free — verified by two identical /api/recommendations calls returning identical scores.",
+    "routes.py timeline() calls db.saved with user_id filter; today's date comparison uses ISO date strings — safe.",
+    "server.py CORS allow_origins uses split(',') on env — good; ensure no trailing spaces in .env values.",
+    "Frontend api.js sets withCredentials:true; browsers block wildcard CORS + credentials so allow_origins must be explicit (it is).",
+    "PublicOnly race described above is the only structural issue."
+  ],
+  "updated_files": ["/app/backend/tests/backend_test.py", "/app/test_reports/iteration_1.json"],
+  "success_rate": {"backend": "100%", "frontend": "~90% (2 non-blocking bugs)"},
+  "test_credentials": "New unique test students registered per run (email: e2e_<uuid>@example.com / Test@1234). Admin: admin@unimatch.app / Admin@123.",
+  "seed_data_creation": "None (backend already seeds ~32 universities + scholarships and admin user).",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend suite in /app/backend/tests/backend_test.py — run with `REACT_APP_BACKEND_URL=<preview> pytest -n 0` (pytest.ini forces xdist; use -n 0 for serial). Frontend flow needs 'Complete profile' button click as a workaround until the post-register redirect bug is fixed; validate the fix by ensuring URL settles on /onboarding after signup and step-personal is visible within 3s.",
+  "rca of the issue": "Register.submit sequence: (1) await register() → setUser(data.user) is scheduled; (2) navigate('/onboarding') is called imperatively → URL becomes /onboarding. React then commits pending state; PublicOnly (which wrapped /register) had already rendered <Navigate to='/dashboard' replace/> when it saw truthy user in the render pass before URL commit — its useEffect fires after commit and calls navigate('/dashboard'), overriding onboarding. Fix by moving the navigate into an effect that only runs when we know we're the /register route, or perform the setUser + navigate in a single controlled effect so PublicOnly never mounts <Navigate/> for a just-authenticated user during signup."
+}
