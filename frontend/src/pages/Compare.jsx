@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../lib/api";
 import { Layout } from "../components/Layout";
@@ -30,7 +30,7 @@ export default function Compare() {
   const navigate = useNavigate();
   const [items, setItems] = useState(null);
   const [mobileIdx, setMobileIdx] = useState(0);
-  const slugs = new URLSearchParams(window.location.search).get("slugs")?.split(",") || [];
+  const slugs = useMemo(() => new URLSearchParams(window.location.search).get("slugs")?.split(",") || [], []);
 
   useEffect(() => {
     if (slugs.length < 2) return;
