@@ -27,9 +27,6 @@ async def root():
     return {"message": "UniMatch API running"}
 
 
-app.include_router(auth_router)
-app.include_router(core_router)
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=os.environ.get("CORS_ORIGINS", "*").split(","),
@@ -37,6 +34,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(auth_router)
+app.include_router(core_router)
 
 
 @app.on_event("startup")
