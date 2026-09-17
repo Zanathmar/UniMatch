@@ -154,16 +154,22 @@ async def _get_program_scholarships(program: dict, degree: str, field: str, univ
     slugs = program.get("scholarship_ids", [])
     linked = await db.scholarships.find({"slug": {"$in": slugs}}, {"_id": 0}).to_list(100)
 
-    # Only include TRULY global scholarships — those with no linked universities at all.
-    # A scholarship is global only when linked_university_slugs is absent OR empty.
-    # Scholarships that ARE linked to specific universities (via linked_university_slugs)
-    # are NOT global and must not leak into other universities' results.
+    # Only include TRULY global scholarships — those with no university affiliation at all.
+    # A scholarship is global only when BOTH:
+    #   - linked_university_slugs is absent OR empty (not linked to specific unis via country scholarships)
+    #   - university_slug is absent OR null (not a university-specific scholarship)
+    # Scholarships with university_slug set (mit-need, harv-need, etc.) are excluded from global results.
     globals_ = await db.scholarships.find(
         {"$and": [
             # Must have no specific university links
             {"$or": [
                 {"linked_university_slugs": {"$exists": False}},
                 {"linked_university_slugs": {"$size": 0}},
+            ]},
+            # Must not be tied to a specific university
+            {"$or": [
+                {"university_slug": {"$exists": False}},
+                {"university_slug": None},
             ]},
             # Degree match
             {"$or": [{"degree_level": "Any"}, {"degree_level": degree}]},
