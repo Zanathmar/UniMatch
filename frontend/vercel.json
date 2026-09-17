@@ -7,8 +7,8 @@
       "config": { "distDir": "build" }
     }
   ],
-  "routes": [
-    { "src": "/(.*)", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "buildCommand": "npx craco build",
   "installCommand": "npm install"
