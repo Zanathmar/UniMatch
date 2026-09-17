@@ -47,42 +47,65 @@ export default function UniversityDetail() {
 
   return (
     <Layout>
-      <button onClick={() => navigate(-1)} className="mb-4 flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-800" data-testid="back-btn">
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-4 flex items-center gap-1 py-1 text-sm text-zinc-500 hover:text-zinc-800"
+        data-testid="back-btn"
+      >
         <ArrowLeft className="h-4 w-4" /> Back
       </button>
 
       <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
-        <div className="relative h-48 w-full bg-zinc-100 sm:h-56">
+        <div className="relative h-40 w-full bg-zinc-100 sm:h-56">
           {u.image_url ? (
-            <img src={u.image_url} alt={u.name} className="h-full w-full object-cover" onError={(e) => { e.target.style.display = "none"; }} />
+            <img
+              src={u.image_url}
+              alt={u.name}
+              className="h-full w-full object-cover"
+              onError={(e) => { e.target.style.display = "none"; }}
+            />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-indigo-50">
               <Building2 className="h-12 w-12 text-indigo-200" />
             </div>
           )}
         </div>
-        <div className="p-5 sm:p-6">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <h1 className="font-heading text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl">{u.name}</h1>
-              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-zinc-500">
-                <span className="flex items-center gap-1"><MapPin className="h-4 w-4" />{u.city}, {u.country}</span>
-                {u.qs_ranking && <span className="flex items-center gap-1"><Trophy className="h-4 w-4" />QS #{u.qs_ranking}</span>}
-                <span className="flex items-center gap-1"><Building2 className="h-4 w-4" />{u.type}</span>
-                {u.acceptance_rate != null && <span className="flex items-center gap-1"><Award className="h-4 w-4" />{u.acceptance_rate}% acceptance</span>}
-              </div>
-              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-600">{u.description}</p>
-            </div>
+        <div className="p-4 sm:p-6">
+          <h1 className="font-heading text-xl font-bold leading-tight tracking-tight text-zinc-900 sm:text-3xl">
+            {u.name}
+          </h1>
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-zinc-500 sm:gap-x-4 sm:text-sm">
+            <span className="flex items-center gap-1"><MapPin className="h-4 w-4 shrink-0" />{u.city}, {u.country}</span>
+            {u.qs_ranking && <span className="flex items-center gap-1"><Trophy className="h-4 w-4 shrink-0" />QS #{u.qs_ranking}</span>}
+            <span className="flex items-center gap-1"><Building2 className="h-4 w-4 shrink-0" />{u.type}</span>
+            {u.acceptance_rate != null && <span className="flex items-center gap-1"><Award className="h-4 w-4 shrink-0" />{u.acceptance_rate}% acceptance</span>}
           </div>
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            <Button onClick={save} disabled={saved} className={saved ? "bg-emerald-600 hover:bg-emerald-600" : "bg-indigo-600 hover:bg-indigo-700"} data-testid="save-university-btn">
+          <p className="mt-3 text-sm leading-relaxed text-zinc-600 sm:max-w-2xl">{u.description}</p>
+
+          <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+            <Button
+              onClick={save}
+              disabled={saved}
+              className={`w-full justify-center sm:w-auto ${saved ? "bg-emerald-600 hover:bg-emerald-600" : "bg-indigo-600 hover:bg-indigo-700"}`}
+              data-testid="save-university-btn"
+            >
               {saved ? <><BookmarkCheck className="mr-1.5 h-4 w-4" /> Shortlisted</> : <><Bookmark className="mr-1.5 h-4 w-4" /> Add to shortlist</>}
             </Button>
-            <Button variant="outline" className="border-zinc-300" onClick={() => compare.toggle(u.slug)} data-testid="compare-toggle-detail">
+            <Button
+              variant="outline"
+              className="w-full justify-center border-zinc-300 sm:w-auto"
+              onClick={() => compare.toggle(u.slug)}
+              data-testid="compare-toggle-detail"
+            >
               <GitCompare className="mr-1.5 h-4 w-4" /> {compare.has(u.slug) ? "Selected" : "Compare"}
             </Button>
             {u.website && (
-              <a href={u.website} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-sm font-medium text-indigo-600 hover:underline">
+              <a
+                href={u.website}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center gap-1 py-1.5 text-sm font-medium text-indigo-600 hover:underline sm:justify-start sm:py-0"
+              >
                 Official site <ExternalLink className="h-3.5 w-3.5" />
               </a>
             )}
@@ -90,25 +113,27 @@ export default function UniversityDetail() {
         </div>
       </div>
 
-      <h2 className="mb-3 mt-8 font-heading text-xl font-semibold text-zinc-900">Programs & your fit</h2>
+      <h2 className="mb-3 mt-6 font-heading text-lg font-semibold text-zinc-900 sm:mt-8 sm:text-xl">
+        Programs & your fit
+      </h2>
       <div className="space-y-4">
         {programs.map(({ program: p, fit, scholarships }) => (
-          <div key={p.id} className="rounded-xl border border-zinc-200 bg-white p-5" data-testid={`program-${p.id}`}>
-            <div className="flex flex-wrap items-start justify-between gap-4">
+          <div key={p.id} className="rounded-xl border border-zinc-200 bg-white p-4 sm:p-5" data-testid={`program-${p.id}`}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <span className="rounded-md bg-zinc-100 px-2 py-0.5 font-mono text-[10px] uppercase text-zinc-600">{p.degree}</span>
                   <span className="rounded-md bg-indigo-50 px-2 py-0.5 font-mono text-[10px] uppercase text-indigo-600">{p.field}</span>
                 </div>
-                <h3 className="mt-2 font-heading text-lg font-semibold text-zinc-900">{p.name}</h3>
+                <h3 className="mt-2 font-heading text-base font-semibold text-zinc-900 sm:text-lg">{p.name}</h3>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center justify-between gap-3 sm:justify-end">
                 <FitScoreRing score={fit.fit_score} size={64} />
                 <WhyThisMatch fit={fit} universityName={u.name} programName={p.name} />
               </div>
             </div>
 
-            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3">
               <Spec icon={DollarSign} label="Tuition / year" value={money(p.tuition_per_year?.value)} field={p.tuition_per_year} />
               <Spec icon={Home} label="Living / year" value={money(p.living_cost_per_year?.value)} field={p.living_cost_per_year} />
               <Spec icon={Clock} label="Application deadline" value={p.application_deadline?.value} field={p.application_deadline} />
@@ -119,7 +144,9 @@ export default function UniversityDetail() {
 
             {scholarships.length > 0 && (
               <div className="mt-4 rounded-lg border border-emerald-100 bg-emerald-50/50 p-3">
-                <p className="flex items-center gap-1.5 text-sm font-medium text-emerald-800"><Award className="h-4 w-4" />{scholarships.length} linked scholarship{scholarships.length > 1 ? "s" : ""}</p>
+                <p className="flex items-center gap-1.5 text-sm font-medium text-emerald-800">
+                  <Award className="h-4 w-4 shrink-0" />{scholarships.length} linked scholarship{scholarships.length > 1 ? "s" : ""}
+                </p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {scholarships.map((s) => (
                     <span key={s.slug} className="rounded-md border border-emerald-200 bg-white px-2 py-1 text-xs text-emerald-700">{s.name}</span>
@@ -130,7 +157,9 @@ export default function UniversityDetail() {
           </div>
         ))}
       </div>
-      <p className="mt-6 text-center text-xs text-zinc-400">Fit Scores are estimates based on your profile and verifiable data — never a guarantee of admission.</p>
+      <p className="mt-6 px-4 text-center text-xs text-zinc-400 sm:px-0">
+        Fit Scores are estimates based on your profile and verifiable data — never a guarantee of admission.
+      </p>
     </Layout>
   );
 }
@@ -138,7 +167,7 @@ export default function UniversityDetail() {
 function Spec({ icon: Icon, label, value, field }) {
   return (
     <div className="rounded-lg border border-zinc-100 bg-zinc-50/60 p-3">
-      <p className="flex items-center gap-1.5 text-xs text-zinc-500"><Icon className="h-3.5 w-3.5" />{label}</p>
+      <p className="flex items-center gap-1.5 text-xs text-zinc-500"><Icon className="h-3.5 w-3.5 shrink-0" />{label}</p>
       <div className="mt-1 flex items-center justify-between gap-2">
         <span className="text-sm font-medium text-zinc-800">{value || "—"}</span>
         {field && <StatusBadge status={field.status} source={field.source} />}
