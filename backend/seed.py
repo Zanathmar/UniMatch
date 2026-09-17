@@ -626,6 +626,7 @@ SCHOLARSHIPS = [
      "deadline": {"value": "2026-01-15", "status": "Verified", "source": "HKU Scholarships", "note": None},
      "requirements_text": "Automatic consideration for top admitted students.",
      "link": "https://aal.hku.hk/admissions/international/scholarships",
+     "linked_university_slugs": ["hku"],
      "source": "curated"
     },
     {
@@ -642,6 +643,7 @@ SCHOLARSHIPS = [
      "deadline": {"value": "2026-04-30", "status": "Verified", "source": "KAIST Admissions", "note": None},
      "requirements_text": "Strong STEM record; maintained by GPA condition.",
      "link": "https://admission.kaist.ac.kr",
+     "linked_university_slugs": ["kaist"],
      "source": "curated"
     },
     {
