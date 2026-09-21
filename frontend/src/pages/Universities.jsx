@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import api from "../lib/api";
 import { Layout } from "../components/Layout";
 import { Button } from "../components/ui/button";
@@ -14,6 +14,26 @@ import {
   DialogTrigger,
 } from "../components/ui/dialog";
 import { ChevronDown, ChevronUp, Plus, Globe, MapPin, Trophy, ExternalLink, Building2, Pencil, Trash2, BookOpen, X } from "lucide-react";
+
+const fetchIdRef = useRef(0);
+
+async function fetchUniversities() {
+  const requestId = ++fetchIdRef.current;
+  setLoading(true);
+  try {
+    const res = await api.get("/custom/universities");
+    if (requestId !== fetchIdRef.current) return;
+    const items = res.data.items || [];
+    const deduped = Array.from(
+      new Map(items.map((u) => [u.slug || u.id, u])).values()
+    );
+    setUniversities(deduped);
+  } catch (e) {
+    console.error(e);
+  } finally {
+    if (requestId === fetchIdRef.current) setLoading(false);
+  }
+}
 
 const EMPTY_PROGRAM = {
   name: "",
@@ -663,7 +683,7 @@ export default function Universities() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {universities.map((uni) => (
             <div
-              key={uni.id}
+              key={uni.id || uni.slug}
               className="flex flex-col rounded-xl border border-zinc-200 bg-white p-5 transition-shadow hover:shadow-sm"
             >
               {uni.image_url && (
