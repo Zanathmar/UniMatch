@@ -941,75 +941,75 @@ async def update_settings_slash(settings: UserSettingsUpdate, user: dict = Depen
     return await update_settings(settings, user)
 
 
-# ====================== WEB RESEARCH ======================
+# # ====================== WEB RESEARCH ======================
 
-@router.get("/research/limits")
-async def research_limits(user: dict = Depends(get_current_user)):
-    """Return the calling user's own search limits and API key status."""
-    from bson import ObjectId
-    db_user = await db.users.find_one({"_id": ObjectId(user["id"])})
-    searches_used = db_user.get("searches_used_today", 0) if db_user else 0
-    searches_limit = db_user.get("searches_limit", 100) if db_user else 100
-    user_api_key = (db_user.get("serp_api_key") or "") if db_user else ""
-    return get_limits(
-        searches_used=searches_used,
-        searches_limit=searches_limit,
-        user_api_key=user_api_key.strip() or None,
-    )
+# @router.get("/research/limits")
+# async def research_limits(user: dict = Depends(get_current_user)):
+#     """Return the calling user's own search limits and API key status."""
+#     from bson import ObjectId
+#     db_user = await db.users.find_one({"_id": ObjectId(user["id"])})
+#     searches_used = db_user.get("searches_used_today", 0) if db_user else 0
+#     searches_limit = db_user.get("searches_limit", 100) if db_user else 100
+#     user_api_key = (db_user.get("serp_api_key") or "") if db_user else ""
+#     return get_limits(
+#         searches_used=searches_used,
+#         searches_limit=searches_limit,
+#         user_api_key=user_api_key.strip() or None,
+#     )
 
 
-@router.get("/research/scholarships")
-async def research_scholarships(
-    country: str = Query(..., min_length=1),
-    field: str = Query(default="Any"),
-    degree: str = Query(default="Any"),
-    query: str = Query(default=None),
-    num: int = Query(default=10, ge=1, le=50),
-    user: dict = Depends(get_current_user),
-):
-    """Search the web for scholarships. Uses the user's own API key if set,
-    otherwise the global SERP_API_KEY env var. Falls back to scholarshipportal.com
-    scraping when no API key is configured."""
-    from models import User
-    from bson import ObjectId
-    db_user = await db.users.find_one({"_id": ObjectId(user["id"])})
-    user_api_key = (db_user.get("serp_api_key") or "").strip() if db_user else ""
-    searches_used = db_user.get("searches_used_today", 0) if db_user else 0
-    searches_limit = db_user.get("searches_limit", 100) if db_user else 100
+# @router.get("/research/scholarships")
+# async def research_scholarships(
+#     country: str = Query(..., min_length=1),
+#     field: str = Query(default="Any"),
+#     degree: str = Query(default="Any"),
+#     query: str = Query(default=None),
+#     num: int = Query(default=10, ge=1, le=50),
+#     user: dict = Depends(get_current_user),
+# ):
+#     """Search the web for scholarships. Uses the user's own API key if set,
+#     otherwise the global SERP_API_KEY env var. Falls back to scholarshipportal.com
+#     scraping when no API key is configured."""
+#     from models import User
+#     from bson import ObjectId
+#     db_user = await db.users.find_one({"_id": ObjectId(user["id"])})
+#     user_api_key = (db_user.get("serp_api_key") or "").strip() if db_user else ""
+#     searches_used = db_user.get("searches_used_today", 0) if db_user else 0
+#     searches_limit = db_user.get("searches_limit", 100) if db_user else 100
 
-    results, limits = search_scholarships(
-        country=country,
-        field=field,
-        degree=degree,
-        query=query,
-        num_results=num,
-        user_api_key=user_api_key or None,
-        searches_used=searches_used,
-        searches_limit=searches_limit,
-    )
+#     results, limits = search_scholarships(
+#         country=country,
+#         field=field,
+#         degree=degree,
+#         query=query,
+#         num_results=num,
+#         user_api_key=user_api_key or None,
+#         searches_used=searches_used,
+#         searches_limit=searches_limit,
+#     )
 
-    # Increment per-user search count if a real API key was used (not the fallback)
-    if limits.api_key_source in ("user", "global"):
-        new_used = searches_used + 1
-        await db.users.update_one(
-            {"_id": ObjectId(user["id"])},
-            {"$set": {"searches_used_today": new_used}},
-        )
-        limits = get_limits(
-            searches_used=new_used,
-            searches_limit=searches_limit,
-            user_api_key=user_api_key or None,
-        )
+#     # Increment per-user search count if a real API key was used (not the fallback)
+#     if limits.api_key_source in ("user", "global"):
+#         new_used = searches_used + 1
+#         await db.users.update_one(
+#             {"_id": ObjectId(user["id"])},
+#             {"$set": {"searches_used_today": new_used}},
+#         )
+#         limits = get_limits(
+#             searches_used=new_used,
+#             searches_limit=searches_limit,
+#             user_api_key=user_api_key or None,
+#         )
 
-    global_key_ok = _is_global_key_configured()
-    setup_needed = not user_api_key and not global_key_ok
+#     global_key_ok = _is_global_key_configured()
+#     setup_needed = not user_api_key and not global_key_ok
 
-    return {
-        "results": [r.model_dump() for r in results],
-        "limits": limits.model_dump(),
-        "setup_needed": setup_needed,
-        "using_user_key": bool(user_api_key),
-    }
+#     return {
+#         "results": [r.model_dump() for r in results],
+#         "limits": limits.model_dump(),
+#         "setup_needed": setup_needed,
+#         "using_user_key": bool(user_api_key),
+#     }
 # ---------------- Dashboard ----------------
 @router.get("/dashboard")
 async def dashboard(user: dict = Depends(get_current_user)):

@@ -23,7 +23,7 @@ const nav = [
   { to: "/discover", label: "Discover", icon: Compass },
   { to: "/universities", label: "Universities", icon: School },
   { to: "/scholarships", label: "Scholarships", icon: Award },
-  { to: "/research", label: "Web Research", icon: Globe },
+  // { to: "/research", label: "Web Research", icon: Globe },
   { to: "/saved", label: "Shortlist", icon: Bookmark },
   { to: "/timeline", label: "Timeline", icon: CalendarClock },
   { to: "/onboarding", label: "My Profile", icon: User },
