@@ -15,25 +15,6 @@ import {
 } from "../components/ui/dialog";
 import { ChevronDown, ChevronUp, Plus, Globe, MapPin, Trophy, ExternalLink, Building2, Pencil, Trash2, BookOpen, X } from "lucide-react";
 
-const fetchIdRef = useRef(0);
-
-async function fetchUniversities() {
-  const requestId = ++fetchIdRef.current;
-  setLoading(true);
-  try {
-    const res = await api.get("/custom/universities");
-    if (requestId !== fetchIdRef.current) return;
-    const items = res.data.items || [];
-    const deduped = Array.from(
-      new Map(items.map((u) => [u.slug || u.id, u])).values()
-    );
-    setUniversities(deduped);
-  } catch (e) {
-    console.error(e);
-  } finally {
-    if (requestId === fetchIdRef.current) setLoading(false);
-  }
-}
 
 const EMPTY_PROGRAM = {
   name: "",
@@ -271,6 +252,26 @@ export default function Universities() {
   const [deleteId, setDeleteId] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  const fetchIdRef = useRef(0);
+
+async function fetchUniversities() {
+  const requestId = ++fetchIdRef.current;
+  setLoading(true);
+  try {
+    const res = await api.get("/custom/universities");
+    if (requestId !== fetchIdRef.current) return;
+    const items = res.data.items || [];
+    const deduped = Array.from(
+      new Map(items.map((u) => [u.slug || u.id, u])).values()
+    );
+    setUniversities(deduped);
+  } catch (e) {
+    console.error(e);
+  } finally {
+    if (requestId === fetchIdRef.current) setLoading(false);
+  }
+}
 
   useEffect(() => {
     fetchUniversities();
