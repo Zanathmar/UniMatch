@@ -175,8 +175,9 @@ async def _get_program_scholarships(program: dict, degree: str, field: str, univ
             {"$or": [{"degree_level": "Any"}, {"degree_level": degree}]},
             # Field match
             {"$or": [{"field": "Any"}, {"field": field}]},
-            # Country match (None = any country)
-            {"$or": [{"country": None}, {"country": university.get("country")}]},
+            # Country match — must be "Any" (explicitly country-agnostic) or match the university's country.
+            # Missing/blank country fails CLOSED (excluded) rather than leaking as a silent wildcard.
+            {"$or": [{"country": "Any"}, {"country": university.get("country")}]},
         ]},
         {"_id": 0}).to_list(100)
     seen = {s["slug"] for s in linked}

@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../components/ui/dialog";
-import { ChevronDown, ChevronUp, Plus, Globe, MapPin, Trophy, ExternalLink, Building2, Pencil, Trash2, BookOpen, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus, Globe, MapPin, Trophy, ExternalLink, Building2, Pencil, Trash2, BookOpen, Search, X } from "lucide-react";
 
 
 const EMPTY_PROGRAM = {
@@ -252,6 +252,7 @@ export default function Universities() {
   const [deleteId, setDeleteId] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [search, setSearch] = useState("");
 
   const fetchIdRef = useRef(0);
 
@@ -414,6 +415,22 @@ async function fetchUniversities() {
       setDeleting(false);
     }
   }
+
+  const q = search.trim().toLowerCase();
+  const filteredUniversities = q
+    ? universities.filter((u) =>
+        [
+          u.name,
+          u.country,
+          u.city,
+          u.description,
+          ...(u.programs || []).map((p) => `${p.name || ""} ${p.field || ""}`),
+        ]
+          .join(" ")
+          .toLowerCase()
+          .includes(q)
+      )
+    : universities;
 
   return (
     <Layout>
@@ -661,6 +678,26 @@ async function fetchUniversities() {
         </Dialog>
       </div>
 
+      <div className="relative mb-6">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+        <Input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search by name, country, city, or program…"
+          className="pl-9 pr-9"
+        />
+        {search && (
+          <button
+            type="button"
+            onClick={() => setSearch("")}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors"
+            title="Clear search"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+
       {loading ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {[...Array(6)].map((_, i) => (
@@ -680,9 +717,20 @@ async function fetchUniversities() {
             <Plus className="h-4 w-4" /> Add University
           </Button>
         </div>
+      ) : filteredUniversities.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-zinc-300 py-16 text-center">
+          <Search className="h-12 w-12 text-zinc-300" />
+          <h3 className="mt-4 font-heading text-lg font-semibold text-zinc-900">No matches</h3>
+          <p className="mt-1 text-sm text-zinc-500">
+            Nothing matches "{search}". Try a different term.
+          </p>
+          <Button variant="outline" className="mt-4" onClick={() => setSearch("")}>
+            Clear search
+          </Button>
+        </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {universities.map((uni) => (
+          {filteredUniversities.map((uni) => (
             <div
               key={uni.id || uni.slug}
               className="flex flex-col rounded-xl border border-zinc-200 bg-white p-5 transition-shadow hover:shadow-sm"

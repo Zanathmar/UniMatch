@@ -6,7 +6,8 @@ import { UniversityCard } from "../components/UniversityCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Skeleton } from "../components/ui/skeleton";
 import { Button } from "../components/ui/button";
-import { SlidersHorizontal, Info } from "lucide-react";
+import { SlidersHorizontal, Info, Search, X } from "lucide-react";
+import { Input } from "../components/ui/input";
 
 export default function Discover() {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ export default function Discover() {
   const [field, setField] = useState("all");
   const [sort, setSort] = useState("fit");
   const [minFit, setMinFit] = useState("0");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     api.get("/meta").then((r) => setMeta(r.data));
@@ -28,6 +30,22 @@ export default function Discover() {
     if (field !== "all") params.field = field;
     api.get("/recommendations", { params }).then((r) => setData(r.data));
   }, [country, field, sort, minFit]);
+
+  const q = search.trim().toLowerCase();
+  const filteredItems = data && q
+    ? data.items.filter((item) =>
+        [
+          item.university?.name,
+          item.university?.country,
+          item.university?.city,
+          item.top_program?.name,
+          item.top_program?.field,
+        ]
+          .join(" ")
+          .toLowerCase()
+          .includes(q)
+      )
+    : data?.items;
 
   return (
     <Layout>
@@ -46,6 +64,25 @@ export default function Discover() {
 
       {/* Filters */}
       <div className="mb-5 flex flex-wrap items-center gap-3 rounded-xl border border-zinc-200 bg-white p-3">
+        <div className="relative w-full sm:w-64">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search universities or programs…"
+            className="pl-9 pr-9"
+          />
+          {search && (
+            <button
+              type="button"
+              onClick={() => setSearch("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors"
+              title="Clear search"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
         <div className="flex items-center gap-1.5 text-sm font-medium text-zinc-500">
           <SlidersHorizontal className="h-4 w-4" /> Filters
         </div>
@@ -84,16 +121,22 @@ export default function Discover() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[...Array(6)].map((_, i) => <Skeleton key={i} className="h-72" />)}
         </div>
-      ) : data.items.length === 0 ? (
+      ) : filteredItems.length === 0 ? (
         <div className="rounded-xl border border-dashed border-zinc-300 bg-white p-10 text-center">
-          <p className="text-zinc-600">No universities match these filters.</p>
-          <Button variant="outline" className="mt-3" onClick={() => { setCountry("all"); setField("all"); setMinFit("0"); }}>Reset filters</Button>
+          <p className="text-zinc-600">
+            {q && data.items.length > 0
+              ? `Nothing matches "${search}".`
+              : "No universities match these filters."}
+          </p>
+          <Button variant="outline" className="mt-3" onClick={() => { setCountry("all"); setField("all"); setMinFit("0"); setSearch(""); }}>Reset filters</Button>
         </div>
       ) : (
         <>
-          <p className="mb-3 text-sm text-zinc-500" data-testid="results-count">{data.total} matches</p>
+          <p className="mb-3 text-sm text-zinc-500" data-testid="results-count">
+            {q ? `${filteredItems.length} of ${data.total} matches` : `${data.total} matches`}
+          </p>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {data.items.map((item) => (
+            {filteredItems.map((item) => (
               <UniversityCard key={item.university.slug} item={item} onOpen={(slug) => navigate(`/university/${slug}`)} />
             ))}
           </div>

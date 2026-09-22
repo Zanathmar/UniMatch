@@ -13,7 +13,7 @@ import { Switch } from "../components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../components/ui/command";
 import { Badge } from "../components/ui/badge";
-import { Award, ExternalLink, CheckCircle2, HelpCircle, XCircle, Calendar, Plus, Pencil, Trash, ShieldCheck, ChevronDown, Check, University, X } from "lucide-react";
+import { Award, ExternalLink, CheckCircle2, HelpCircle, XCircle, Calendar, Plus, Pencil, Trash, ShieldCheck, ChevronDown, Check, University, Search, X } from "lucide-react";
 
 const VERDICT = {
   "Likely Eligible": { cls: "bg-emerald-50 text-emerald-700 border-emerald-200", icon: CheckCircle2 },
@@ -24,6 +24,7 @@ const VERDICT = {
 export default function Scholarships() {
   const [items, setItems] = useState(null);
   const [filter, setFilter] = useState("all");
+  const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [editingSlug, setEditingSlug] = useState(null);
@@ -213,7 +214,26 @@ export default function Scholarships() {
     }
   }, [dialogOpen]);
 
-  const shown = items?.filter((s) => filter === "all" || s.eligibility_result?.verdict === filter);
+  const q = search.trim().toLowerCase();
+  const shown = items?.filter((s) => {
+    if (filter !== "all" && s.eligibility_result?.verdict !== filter) return false;
+    if (!q) return true;
+    return [
+      s.name,
+      s.provider,
+      s.coverage_text,
+      s.field,
+      s.country,
+      s.citizenship,
+      s.deadline?.value,
+      ...(Array.isArray(s.university_slug)
+        ? s.university_slug.flatMap((slug) => [slug, getUniversityName(slug)])
+        : []),
+    ]
+      .join(" ")
+      .toLowerCase()
+      .includes(q);
+  });
 
   const curatedUnis = universities.filter((u) => !u.isCustom);
   const customUnis = universities.filter((u) => u.isCustom);
@@ -234,7 +254,26 @@ export default function Scholarships() {
           <h1 className="font-heading text-3xl font-bold tracking-tight text-zinc-900">Scholarships</h1>
           <p className="mt-1 text-sm text-zinc-500">Rule-based eligibility estimates with plain-English reasons. Not a guarantee.</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative w-full sm:w-72">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search scholarships…"
+              className="pl-9 pr-9"
+            />
+            {search && (
+              <button
+                type="button"
+                onClick={() => setSearch("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors"
+                title="Clear search"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
           <Button onClick={() => setDialogOpen(true)} className="gap-1.5">
             <Plus className="h-4 w-4" /> Add Scholarship
           </Button>
@@ -252,6 +291,22 @@ export default function Scholarships() {
 
       {!items ? (
         <div className="grid gap-4 md:grid-cols-2">{[...Array(4)].map((_, i) => <Skeleton key={i} className="h-56" />)}</div>
+      ) : shown.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-zinc-300 py-16 text-center">
+          <Search className="h-12 w-12 text-zinc-300" />
+          <h3 className="mt-4 font-heading text-lg font-semibold text-zinc-900">No matches</h3>
+          <p className="mt-1 text-sm text-zinc-500">
+            {q ? `Nothing matches "${search}".` : "No scholarships found."}{" "}
+            Try a different term or adjust the filter.
+          </p>
+          <Button
+            variant="outline"
+            className="mt-4"
+            onClick={() => { setSearch(""); setFilter("all"); }}
+          >
+            Clear search &amp; filters
+          </Button>
+        </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {shown.map((s) => {
